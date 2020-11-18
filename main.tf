@@ -30,3 +30,26 @@ module "vpc" {
     Owner = local.owner
   }
 }
+
+resource "tls_private_key" "this" {
+   algorithm = "RSA"
+}
+
+resource "local_file" "private_key" {
+    content     = tls_private_key.this.private_key_pem
+    filename = join(".", [var.key_name, "pem"])
+}
+
+## AWS KEY_PAIR MODULE ##
+module "key_pair" {
+  source = "terraform-aws-modules/key-pair/aws"
+  version = "0.5.0"
+
+  key_name = var.key_name
+  public_key = tls_private_key.this.public_key_openssh
+
+  tags = {
+    Name = local.project_name
+    Owner = local.owner
+  }
+}

@@ -1,5 +1,5 @@
 variable region {
-  default     = "ap-souteast-1"
+  default     = "ap-southeast-1"
   description = "AWS Region"
 }
 
@@ -12,4 +12,9 @@ variable vpc {
     is_enable_natgw = bool
   })
   description = "AWS VPC Variables"
+}
+
+variable "key_name" {
+  type = string
+  description = "AWS Key_pair variables"
 }
