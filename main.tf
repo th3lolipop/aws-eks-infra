@@ -23,7 +23,10 @@ module "vpc" {
   private_subnets = var.vpc.pri_sub
   public_subnets  = var.vpc.pub_sub
 
-  enable_nat_gateway = var.vpc.is_enable_natgw
+  enable_nat_gateway     = var.vpc.is_enable_natgw
+  enable_vpn_gateway     = var.vpc.is_enable_vpngw
+  single_nat_gateway     = var.vpc.is_single_natgw
+  one_nat_gateway_per_az = var.vpc.is_one_natgw_per_az
 
   tags = {
     Name  = local.project_name
@@ -32,24 +35,24 @@ module "vpc" {
 }
 
 resource "tls_private_key" "this" {
-   algorithm = "RSA"
+  algorithm = "RSA"
 }
 
 resource "local_file" "private_key" {
-    content     = tls_private_key.this.private_key_pem
-    filename = join(".", [var.key_name, "pem"])
+  content  = tls_private_key.this.private_key_pem
+  filename = join(".", [var.key_name, "pem"])
 }
 
 ## AWS KEY_PAIR MODULE ##
 module "key_pair" {
-  source = "terraform-aws-modules/key-pair/aws"
+  source  = "terraform-aws-modules/key-pair/aws"
   version = "0.5.0"
 
-  key_name = var.key_name
+  key_name   = var.key_name
   public_key = tls_private_key.this.public_key_openssh
 
   tags = {
-    Name = local.project_name
+    Name  = local.project_name
     Owner = local.owner
   }
 }
