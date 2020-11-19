@@ -65,6 +65,8 @@ module "eks" {
   cluster_version = var.eks.cluster_version
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
+  map_users 	  = var.eks.map_users
+  map_accounts 	  = var.eks.map_accounts
 
   worker_groups_launch_template = [
     {
