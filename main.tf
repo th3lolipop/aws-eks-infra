@@ -86,4 +86,7 @@ module "eks" {
       public_ip            = var.eks.is_public_ip
     },
   ]
+
+  map_users    = var.map_users
+  map_accounts = var.map_accounts
 }
