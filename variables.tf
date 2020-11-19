@@ -28,7 +28,7 @@ variable "eks" {
     instance_type   = list(string)
     is_public_ip    = bool
     asg_desire_cap  = number
-    map_users       = list(object({ userarn = string, username = string, group = list(string) }))
+    map_users       = list(object({ userarn = string, username = string, groups = list(string) }))
     map_accounts    = list(string)
   })
   description = "AWS EKS Variables"
