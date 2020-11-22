@@ -59,15 +59,15 @@ module "key_pair" {
 
 ## AWS EKS ##
 module "eks" {
-  source          = "app.terraform.io/opslab/eks/aws"
+  source          = "app.terraform.io/aws-eks-infrastructure/eks/aws"
   version         = "0.0.1"
   cluster_name    = local.project_name
   cluster_version = var.eks.cluster_version
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
-  map_users 	  = var.eks.map_users
-  map_accounts 	  = var.eks.map_accounts
-  key_name	  = module.key_pair.this_key_pair_key_name
+  map_users       = var.eks.map_users
+  map_accounts    = var.eks.map_accounts
+  key_name        = module.key_pair.this_key_pair_key_name
 
   worker_groups_launch_template = [
     {
