@@ -71,22 +71,31 @@ module "eks" {
 
   worker_groups_launch_template = [
     {
-      name                 = "worker-group-1"
-      instance_type        = var.eks.instance_type[0]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-1"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
     {
-      name                 = "worker-group-2"
-      instance_type        = var.eks.instance_type[1]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-2"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
     {
-      name                 = "worker-group-3"
-      instance_type        = var.eks.instance_type[2]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-3"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
   ]
 }
