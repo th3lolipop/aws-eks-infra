@@ -59,34 +59,43 @@ module "key_pair" {
 
 ## AWS EKS ##
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "13.2.1"
+  source          = "app.terraform.io/aws-eks-infrastructure/eks/aws"
+  version         = "0.0.1"
   cluster_name    = local.project_name
   cluster_version = var.eks.cluster_version
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
+  map_users       = var.eks.map_users
+  map_accounts    = var.eks.map_accounts
+  key_name        = module.key_pair.this_key_pair_key_name
 
   worker_groups_launch_template = [
     {
-      name                 = "worker-group-1"
-      instance_type        = var.eks.instance_type[0]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-1"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
     {
-      name                 = "worker-group-2"
-      instance_type        = var.eks.instance_type[1]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-2"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
     {
-      name                 = "worker-group-3"
-      instance_type        = var.eks.instance_type[2]
-      asg_desired_capacity = var.eks.asg_desire_cap
-      public_ip            = var.eks.is_public_ip
+      name                    = "worker-group-3"
+      override_instance_types = var.eks.override_instance_types
+      spot_instance_pools     = var.eks.spot_instance_pools
+      asg_max_size            = var.eks.asg_max_size
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_desired_capacity    = var.eks.asg_desire_cap
+      public_ip               = var.eks.is_public_ip
     },
   ]
-
-  map_users    = var.map_users
-  map_accounts = var.map_accounts
 }
