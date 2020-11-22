@@ -56,3 +56,36 @@ module "key_pair" {
     Owner = local.owner
   }
 }
+
+## AWS EKS ##
+module "eks" {
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "13.2.1"
+  cluster_name    = local.project_name
+  cluster_version = var.eks.cluster_version
+  subnets         = module.vpc.private_subnets
+  vpc_id          = module.vpc.vpc_id
+  map_users 	  = var.eks.map_users
+  map_accounts 	  = var.eks.map_accounts
+
+  worker_groups_launch_template = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = var.eks.instance_type[0]
+      asg_desired_capacity = var.eks.asg_desire_cap
+      public_ip            = var.eks.is_public_ip
+    },
+    {
+      name                 = "worker-group-2"
+      instance_type        = var.eks.instance_type[1]
+      asg_desired_capacity = var.eks.asg_desire_cap
+      public_ip            = var.eks.is_public_ip
+    },
+    {
+      name                 = "worker-group-3"
+      instance_type        = var.eks.instance_type[2]
+      asg_desired_capacity = var.eks.asg_desire_cap
+      public_ip            = var.eks.is_public_ip
+    },
+  ]
+}
