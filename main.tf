@@ -60,7 +60,7 @@ module "key_pair" {
 ## AWS EKS ##
 module "eks" {
   source          = "app.terraform.io/aws-eks-infrastructure/eks/aws"
-  version         = "0.0.1"
+  version         = "0.0.2"
   cluster_name    = local.project_name
   cluster_version = var.eks.cluster_version
   subnets         = module.vpc.private_subnets
