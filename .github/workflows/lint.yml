@@ -42,7 +42,7 @@ jobs:
     name: Validate
     runs-on: ubuntu-latest
     container:
-      image: hashicorp/terraform:0.12.29
+      image: hashicorp/terraform:0.13.5
     steps:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
