@@ -50,12 +50,6 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
       - uses: actions/checkout@master
       - name: Validate Code
-        env:
-          AWS_REGION: 'us-east-1'
-          TF_WARN_OUTPUT_ERRORS: 1
-          TF_VAR_vpc: '{ cidr = "10.10.0.0/16", azs = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"], pri_sub = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"], pub_sub = ["10.10.3.0/24", "10.10.4.0/24", "10.10.5.0/24"], is_enable_natgw = true, is_enable_vpngw = false, is_single_natgw = true, is_one_natgw_per_az = false }'
-          TF_VAR_eks: '{ cluster_version = "1.17", override_instance_types = ["t3.medium", "t3.small", "c5.large"], is_public_ip = false, spot_instance_pools = 3, asg_max_size = 5, asg_desire_cap = 2, map_users = [ { userarn = "arn:aws:iam::344475516279:user/phyominhtun", username = "phyominhtun", groups = ["system:masters", "ADMIN"] } ], map_accounts = ["344475516279"] }'
-          TF_VAR_key_name: 'ops-key'
         run: |
           terraform init
           terraform validate
