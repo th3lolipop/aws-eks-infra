@@ -53,38 +53,9 @@ jobs:
         env:
           AWS_REGION: 'us-east-1'
           TF_WARN_OUTPUT_ERRORS: 1
-          TF_VAR_vpc_id: 'vpc-123456'
-          TF_VAR_subnets: '["subnet-12345a"]'
-          TF_VAR_workers_ami_id: 'ami-123456'
-          TF_VAR_cluster_name: 'test_cluster'
+          TF_VAR_vpc: '{ cidr = "10.10.0.0/16", azs = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"], pri_sub = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"], pub_sub = ["10.10.3.0/24", "10.10.4.0/24", "10.10.5.0/24"], is_enable_natgw = true, is_enable_vpngw = false, is_single_natgw = true, is_one_natgw_per_az = false }'
+          TF_VAR_eks: '{ cluster_version = "1.17", override_instance_types = ["t3.medium", "t3.small", "c5.large"], is_public_ip = false, spot_instance_pools = 3, asg_max_size = 5, asg_desire_cap = 2, map_users = [ { userarn = "arn:aws:iam::344475516279:user/phyominhtun", username = "phyominhtun", groups = ["system:masters", "ADMIN"] } ], map_accounts = ["344475516279"] }'
+          TF_VAR_key_name: 'ops-key'
         run: |
           terraform init
           terraform validate
-      - name: Validate Examples
-        run: |
-          for example in $(find examples -maxdepth 1 -mindepth 1 -type d); do
-            cd $example
-            terraform init
-            terraform validate
-            cd -
-          done
-
-  minimum:
-    name: Minimum version check
-    runs-on: ubuntu-latest
-    container:
-      image: hashicorp/terraform:0.12.9
-    steps:
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      - uses: actions/checkout@master
-      - name: Validate Code
-        env:
-          AWS_REGION: 'us-east-1'
-          TF_WARN_OUTPUT_ERRORS: 1
-        run: |
-          sed -i -e 's/>=/=/' -e 's/ \(\d\+\.\d\+\)"/ \1.0"/' versions.tf
-          terraform init
-          terraform validate -var "region=${AWS_REGION}" -var "vpc_id=vpc-123456" -var "subnets=[\"subnet-12345a\"]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
