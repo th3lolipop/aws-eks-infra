@@ -6,9 +6,10 @@ resource "random_string" "suffix" {
 
 # Declaring a Local Value - Initiator 
 locals {
-  project_name  = join("-", ["aws-eks-infra", random_string.suffix.result])
-  owner         = "OpsLAB Team"
-  k8s_namespace = join("-", ["opslab-k8s", random_string.suffix.result])
+  project_name   = join("-", ["aws-eks-infra", random_string.suffix.result])
+  owner          = "OpsLAB Team"
+  k8s_namespace  = join("-", ["opslab-k8s", random_string.suffix.result])
+  security_group = join("-", ["opslab-eks-sg", random_string.suffix.result])
 }
 
 ## AWS VPC MODULE ##
@@ -98,4 +99,80 @@ module "eks" {
       public_ip               = var.eks.is_public_ip
     },
   ]
+}
+
+## AWS Security Group For ALB ##
+module "sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "3.16.0"
+
+  name = local.security_group
+
+  description = "Security group for EKS ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["http-80-tcp"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
+  egress_rules        = ["all-all"]
+  tags = {
+    Name = local.security_group
+  }
+}
+
+## AWS ALB ##
+#module "alb" {
+#  source  = "terraform-aws-modules/alb/aws"
+#  version = "5.9.0"
+#
+#  name = local.project_name
+#
+#  load_balancer_type = "application"
+#
+#  vpc_id          = module.vpc.vpc_id
+#  subnets         = module.vpc.public_subnets
+#  security_groups = [module.sg.this_security_group_id]
+#
+#  target_groups = [
+#    {
+#      name_prefix      = "pref-"
+#      backend_protocol = "HTTP"
+#      backend_port     = 80
+#      target_type      = "instance"
+#    }
+#  ]
+#
+#  http_tcp_listeners = [
+#    {
+#      port               = 80
+#      protocol           = "HTTP"
+#      target_group_index = 0
+#    }
+#  ]
+#
+#  tags = {
+#    Name = local.project_name
+#  }
+#}
+
+## AWS Kubernetes External DNS ## 
+
+module "external-dns" {
+  source  = "DTherHtun/external-dns/aws"
+  version = "0.1.0"
+
+  domain = var.domain
+}
+
+module "alb" {
+  source                             = "dtherhtun/alb/kubernetes"
+  version                            = "0.0.2"
+  aws_alb_ingress_controller_version = "1.1.7"
+  k8s_cluster_name                   = module.eks.cluster_id
+  aws_vpc_id                         = module.vpc.vpc_id
+  k8s_cluster_type                   = var.alb.cluster_type
+  aws_assess_key_id                  = var.aws_access_key
+  aws_secret_access_key              = var.aws_secret_key
+  region                             = var.region
+  k8s_namespace                      = var.alb.namespace
 }

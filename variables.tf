@@ -36,4 +36,22 @@ variable "eks" {
   })
   description = "AWS EKS Variables"
 }
+variable "domain" {
+  type        = string
+  description = "External DNS"
 
+}
+
+variable "alb" {
+  type = object({
+    cluster_type = string
+    namespace    = string
+  })
+}
+variable "aws_access_key" {
+  type = string
+}
+
+variable "aws_secret_key" {
+  type = string
+}
