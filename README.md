@@ -9,8 +9,11 @@
 | terraform | ~> v0.13.4 |
 | aws | ~> 3.15.0 |
 | kubernetes | ~> 1.9 |
+| kubernetes | >= 1.13.3 |
 | local | ~> 2.0.0 |
+| null | ~> 2.1 |
 | random | ~> 3.0.0 |
+| template | ~> 2.1 |
 | tls | ~> 3.0.0 |
 
 ## Providers
