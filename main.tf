@@ -166,7 +166,7 @@ module "external-dns" {
 
 module "alb" {
   source                             = "dtherhtun/alb/kubernetes"
-  version                            = "0.0.1"
+  version                            = "0.0.2"
   aws_alb_ingress_controller_version = "1.1.7"
   k8s_cluster_name                   = module.eks.cluster_id
   aws_vpc_id                         = module.vpc.vpc_id
