@@ -154,3 +154,12 @@ module "alb" {
     Name = local.project_name
   }
 }
+
+## AWS Kubernetes External DNS ## 
+
+module "external-dns" {
+  source  = "DTherHtun/external-dns/aws"
+  version = "0.1.0"
+
+  domain = var.domain
+}
