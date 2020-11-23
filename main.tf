@@ -108,7 +108,7 @@ module "sg" {
 
   name = local.security_group
 
-  description = "Security group for ADMIN EC2"
+  description = "Security group for EKS ALB"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
@@ -121,39 +121,39 @@ module "sg" {
 }
 
 ## AWS ALB ##
-module "alb" {
-  source  = "terraform-aws-modules/alb/aws"
-  version = "5.9.0"
-
-  name = local.project_name
-
-  load_balancer_type = "application"
-
-  vpc_id          = module.vpc.vpc_id
-  subnets         = module.vpc.public_subnets
-  security_groups = [module.sg.this_security_group_id]
-
-  target_groups = [
-    {
-      name_prefix      = "pref-"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "instance"
-    }
-  ]
-
-  http_tcp_listeners = [
-    {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
-    }
-  ]
-
-  tags = {
-    Name = local.project_name
-  }
-}
+#module "alb" {
+#  source  = "terraform-aws-modules/alb/aws"
+#  version = "5.9.0"
+#
+#  name = local.project_name
+#
+#  load_balancer_type = "application"
+#
+#  vpc_id          = module.vpc.vpc_id
+#  subnets         = module.vpc.public_subnets
+#  security_groups = [module.sg.this_security_group_id]
+#
+#  target_groups = [
+#    {
+#      name_prefix      = "pref-"
+#      backend_protocol = "HTTP"
+#      backend_port     = 80
+#      target_type      = "instance"
+#    }
+#  ]
+#
+#  http_tcp_listeners = [
+#    {
+#      port               = 80
+#      protocol           = "HTTP"
+#      target_group_index = 0
+#    }
+#  ]
+#
+#  tags = {
+#    Name = local.project_name
+#  }
+#}
 
 ## AWS Kubernetes External DNS ## 
 
@@ -162,4 +162,17 @@ module "external-dns" {
   version = "0.1.0"
 
   domain = var.domain
+}
+
+module "alb" {
+  source                             = "dtherhtun/alb/kubernetes"
+  version                            = "0.0.1"
+  aws_alb_ingress_controller_version = "2.0.1"
+  k8s_cluster_name                   = module.eks.cluster_id
+  aws_vpc_id                         = module.vpc.vpc_id
+  k8s_cluster_type                   = var.alb.cluster_type
+  aws_assess_key_id                  = var.aws_access_key
+  aws_secret_access_key              = var.aws_secret_key
+  region                             = var.region
+  k8s_namespace                      = var.alb.namespace
 }
