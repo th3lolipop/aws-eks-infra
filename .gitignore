@@ -2,7 +2,7 @@
 **/.terraform/*
 .terraform
 .terraform/*
-
+.terraformrc
 # .tfstate files
 *.tfstate
 *.tfstate.*

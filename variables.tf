@@ -24,13 +24,20 @@ variable "key_name" {
 
 variable "eks" {
   type = object({
-    cluster_version = string
-    instance_type   = list(string)
-    is_public_ip    = bool
-    asg_desire_cap  = number
-    map_users       = list(object({ userarn = string, username = string, groups = list(string) }))
-    map_accounts    = list(string)
+    cluster_version         = string
+    override_instance_types = list(string)
+    spot_instance_pools     = number
+    asg_max_size            = number
+    is_public_ip            = bool
+    asg_desire_cap          = number
+    map_users               = list(object({ userarn = string, username = string, groups = list(string) }))
+    map_accounts            = list(string)
+
   })
   description = "AWS EKS Variables"
 }
+variable "domain" {
+  type        = string
+  description = "External DNS"
 
+}
