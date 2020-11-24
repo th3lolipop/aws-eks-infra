@@ -31,3 +31,8 @@ output "database_password" {
   description = "Database Password"
   sensitive   = true
 }
+
+output "eks_security_group" {
+  value       = module.eks.worker_security_group_id
+  description = "EKS Security Group"
+}
