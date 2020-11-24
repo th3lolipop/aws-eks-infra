@@ -36,7 +36,7 @@
 | eks | AWS EKS Variables | <pre>object({<br>    cluster_version         = string<br>    override_instance_types = list(string)<br>    spot_instance_pools     = number<br>    asg_max_size            = number<br>    is_public_ip            = bool<br>    asg_desire_cap          = number<br>    map_users               = list(object({ userarn = string, username = string, groups = list(string) }))<br>    map_accounts            = list(string)<br><br>  })</pre> | n/a | yes |
 | key\_name | AWS Key\_pair variables | `string` | n/a | yes |
 | region | AWS Region | `string` | `"ap-southeast-1"` | no |
-| vpc | AWS VPC Variables | <pre>object({<br>    cidr                = string<br>    azs                 = list(string)<br>    pri_sub             = list(string)<br>    pub_sub             = list(string)<br>    is_enable_natgw     = bool<br>    is_enable_vpngw     = bool<br>    is_single_natgw     = bool<br>    is_one_natgw_per_az = bool<br>  })</pre> | n/a | yes |
+| vpc | AWS VPC Variables | <pre>object({<br>    cidr                = string<br>    azs                 = list(string)<br>    pri_sub             = list(string)<br>    pub_sub             = list(string)<br>    database_sub        = list(string)<br>    is_enable_natgw     = bool<br>    is_enable_vpngw     = bool<br>    is_single_natgw     = bool<br>    is_one_natgw_per_az = bool<br>    db_sub_grp_create   = bool<br>    db_sub_rt_create    = bool<br>  })</pre> | n/a | yes |
 
 ## Outputs
 
