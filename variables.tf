@@ -36,8 +36,8 @@ variable "eks" {
   })
   description = "AWS EKS Variables"
 }
-variable "domains" {
-  type        = list(string)
+variable "domain" {
+  type        = string
   description = "External DNS"
 
 }

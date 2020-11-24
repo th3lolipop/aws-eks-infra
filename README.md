@@ -32,7 +32,7 @@
 | alb | n/a | <pre>object({<br>    cluster_type = string<br>    namespace    = string<br>  })</pre> | n/a | yes |
 | aws\_access\_key | n/a | `string` | n/a | yes |
 | aws\_secret\_key | n/a | `string` | n/a | yes |
-| domains | External DNS | `list(string)` | n/a | yes |
+| domain | External DNS | `string` | n/a | yes |
 | eks | AWS EKS Variables | <pre>object({<br>    cluster_version         = string<br>    override_instance_types = list(string)<br>    spot_instance_pools     = number<br>    asg_max_size            = number<br>    is_public_ip            = bool<br>    asg_desire_cap          = number<br>    map_users               = list(object({ userarn = string, username = string, groups = list(string) }))<br>    map_accounts            = list(string)<br><br>  })</pre> | n/a | yes |
 | key\_name | AWS Key\_pair variables | `string` | n/a | yes |
 | region | AWS Region | `string` | `"ap-southeast-1"` | no |
