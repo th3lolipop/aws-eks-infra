@@ -9,10 +9,13 @@ variable vpc {
     azs                 = list(string)
     pri_sub             = list(string)
     pub_sub             = list(string)
+    database_sub        = list(string)
     is_enable_natgw     = bool
     is_enable_vpngw     = bool
     is_single_natgw     = bool
     is_one_natgw_per_az = bool
+    db_sub_grp_create   = bool
+    db_sub_rt_create    = bool
   })
   description = "AWS VPC Variables"
 }
@@ -54,4 +57,23 @@ variable "aws_access_key" {
 
 variable "aws_secret_key" {
   type = string
+}
+
+variable "rds" {
+  type = object({
+    engine         = string
+    engine_version = string
+    instance_class = string
+    storage        = string
+    db_name        = string
+    db_username    = string
+    db_password    = string
+    db_port        = string
+    family         = string
+    option         = string
+    deletion       = bool
+    maintenance    = string
+    backup         = string
+  })
+
 }

@@ -10,6 +10,9 @@ locals {
   owner          = "OpsLAB Team"
   k8s_namespace  = join("-", ["opslab-k8s", random_string.suffix.result])
   security_group = join("-", ["opslab-eks-sg", random_string.suffix.result])
+  db_identifier  = join("-", ["opslab-rds", random_string.suffix.result])
+  environment    = join("-", ["opslab-rds", "prod"])
+
 }
 
 ## AWS VPC MODULE ##
@@ -20,14 +23,18 @@ module "vpc" {
   name = local.project_name
   cidr = var.vpc.cidr
 
-  azs             = var.vpc.azs
-  private_subnets = var.vpc.pri_sub
-  public_subnets  = var.vpc.pub_sub
+  azs              = var.vpc.azs
+  private_subnets  = var.vpc.pri_sub
+  public_subnets   = var.vpc.pub_sub
+  database_subnets = var.vpc.database_sub
 
   enable_nat_gateway     = var.vpc.is_enable_natgw
   enable_vpn_gateway     = var.vpc.is_enable_vpngw
   single_nat_gateway     = var.vpc.is_single_natgw
   one_nat_gateway_per_az = var.vpc.is_one_natgw_per_az
+
+  create_database_subnet_group       = var.vpc.db_sub_grp_create
+  create_database_subnet_route_table = var.vpc.db_sub_rt_create
 
   tags = {
     Name  = local.project_name
@@ -120,46 +127,6 @@ module "sg" {
   }
 }
 
-## AWS ALB ##
-#module "alb" {
-#  source  = "terraform-aws-modules/alb/aws"
-#  version = "5.9.0"
-#
-#  name = local.project_name
-#
-#  load_balancer_type = "application"
-#
-#  vpc_id          = module.vpc.vpc_id
-#  subnets         = module.vpc.public_subnets
-#  security_groups = [module.sg.this_security_group_id]
-#
-#  target_groups = [
-#    {
-#      name_prefix      = "pref-"
-#      backend_protocol = "HTTP"
-#      backend_port     = 80
-#      target_type      = "instance"
-#    }
-#  ]
-#
-#  http_tcp_listeners = [
-#    {
-#      port               = 80
-#      protocol           = "HTTP"
-#      target_group_index = 0
-#    }
-#  ]
-#
-#  tags = {
-#    Name = local.project_name
-#  }
-#}
-
-## AWS Kubernetes External DNS ## 
-#data "aws_iam_role" "eks_worker_node" {
-#  name = "eks_external_dns"
-#}
-
 module "external-dns" {
   source  = "DTherHtun/external-dns/aws"
   version = "0.2.5"
@@ -179,4 +146,46 @@ module "alb" {
   aws_secret_access_key              = var.aws_secret_key
   region                             = var.region
   k8s_namespace                      = var.alb.namespace
+}
+
+## AWS RDS Module ## 
+
+module "rds" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "2.20.0"
+
+  identifier = local.db_identifier
+
+  engine            = var.rds.engine
+  engine_version    = var.rds.engine_version
+  instance_class    = var.rds.instance_class
+  allocated_storage = var.rds.storage
+
+  name     = var.rds.db_name
+  username = var.rds.db_username
+  password = var.rds.db_password
+  port     = var.rds.db_port
+
+  maintenance_window = var.rds.maintenance
+  backup_window      = var.rds.backup
+
+  tags = {
+    Owner       = local.owner
+    Environment = local.environment
+  }
+
+  # DB subnet group
+  subnet_ids = module.vpc.database_subnets
+
+  # DB parameter group
+  family = var.rds.family
+
+  # DB option group
+  major_engine_version = var.rds.option
+
+  # Snapshot name upon DB deletion
+  final_snapshot_identifier = local.db_identifier
+
+  # Database Deletion Protection
+  deletion_protection = var.rds.deletion
 }
