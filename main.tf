@@ -156,12 +156,16 @@ module "sg" {
 #}
 
 ## AWS Kubernetes External DNS ## 
+data "aws_iam_role" "eks_worker_node" {
+  name = "eks_external_dns"
+}
 
 module "external-dns" {
-  source  = "DTherHtun/external-dns/aws"
-  version = "0.1.0"
+  source                  = "DTherHtun/external-dns/aws"
+  version                 = "0.1.2"
+  aws_iam_role_for_policy = data.aws_iam_role.eks_worker_node.name
 
-  domain = var.domain
+  domain = var.domains
 }
 
 module "alb" {
