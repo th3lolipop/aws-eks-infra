@@ -9,10 +9,13 @@ variable vpc {
     azs                 = list(string)
     pri_sub             = list(string)
     pub_sub             = list(string)
+    database_sub        = list(string)
     is_enable_natgw     = bool
     is_enable_vpngw     = bool
     is_single_natgw     = bool
     is_one_natgw_per_az = bool
+    db_sub_grp_create   = bool
+    db_sub_rt_create    = bool
   })
   description = "AWS VPC Variables"
 }
