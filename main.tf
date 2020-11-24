@@ -137,10 +137,17 @@ module "sg-rds" {
   description = "Security group for EKS ALB"
   vpc_id      = module.vpc.vpc_id
 
-  ingress_cidr_blocks = module.eks.worker_security_group_id
-  ingress_rules       = ["mysql-tcp"]
-  egress_cidr_blocks  = ["0.0.0.0/0"]
-  egress_rules        = ["all-all"]
+  ingress_with_source_security_group_id = [
+    {
+      from_port                = 3306
+      to_port                  = 3306
+      protocol                 = "tcp"
+      description              = "MySQL Port From Worker Nodes"
+      source_security_group_id = module.eks.worker_security_group_id
+    }
+  ]
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["all-all"]
   tags = {
     Name = local.security_group
   }
