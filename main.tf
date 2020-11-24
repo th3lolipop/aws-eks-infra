@@ -162,7 +162,7 @@ module "sg" {
 
 module "external-dns" {
   source  = "DTherHtun/external-dns/aws"
-  version = "0.2.3"
+  version = "0.2.4"
 
   domain           = var.domain
   k8s_cluster_name = module.eks.cluster_id
