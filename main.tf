@@ -6,12 +6,13 @@ resource "random_string" "suffix" {
 
 # Declaring a Local Value - Initiator 
 locals {
-  project_name   = join("-", ["aws-eks-infra", random_string.suffix.result])
-  owner          = "OpsLAB Team"
-  k8s_namespace  = join("-", ["opslab-k8s", random_string.suffix.result])
-  security_group = join("-", ["opslab-eks-sg", random_string.suffix.result])
-  db_identifier  = join("-", ["opslab-rds", random_string.suffix.result])
-  environment    = join("-", ["opslab-rds", "prod"])
+  project_name       = join("-", ["aws-eks-infra", random_string.suffix.result])
+  owner              = "OpsLAB Team"
+  k8s_namespace      = join("-", ["opslab-k8s", random_string.suffix.result])
+  security_group     = join("-", ["opslab-eks-sg", random_string.suffix.result])
+  security_group_rds = join("-", ["opslab-rds-sg", random_string.suffix.result])
+  db_identifier      = join("-", ["opslab-rds", random_string.suffix.result])
+  environment        = join("-", ["opslab-rds", "prod"])
 
 }
 
@@ -126,7 +127,24 @@ module "sg" {
     Name = local.security_group
   }
 }
+### AWS Security Group For RDS ###
+module "sg-rds" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "3.16.0"
 
+  name = local.security_group_rds
+
+  description = "Security group for EKS ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = [module.eks.worker_security_group_id]
+  ingress_rules       = ["mysql-tcp"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
+  egress_rules        = ["all-all"]
+  tags = {
+    Name = local.security_group
+  }
+}
 module "external-dns" {
   source  = "DTherHtun/external-dns/aws"
   version = "0.2.5"
@@ -156,10 +174,11 @@ module "rds" {
 
   identifier = local.db_identifier
 
-  engine            = var.rds.engine
-  engine_version    = var.rds.engine_version
-  instance_class    = var.rds.instance_class
-  allocated_storage = var.rds.storage
+  engine                 = var.rds.engine
+  engine_version         = var.rds.engine_version
+  instance_class         = var.rds.instance_class
+  allocated_storage      = var.rds.storage
+  vpc_security_group_ids = [module.sg-rds.this_security_group_id]
 
   name     = var.rds.db_name
   username = var.rds.db_username
