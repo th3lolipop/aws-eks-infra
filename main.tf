@@ -175,7 +175,7 @@ module "rds" {
   }
 
   # DB subnet group
-  subnet_ids = module.vpc.database_subnet_group
+  subnet_ids = module.vpc.database_subnets
 
   # DB parameter group
   family = var.rds.family
