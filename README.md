@@ -47,6 +47,7 @@
 | database\_instance\_address | Database Instance Address |
 | database\_password | Database Password |
 | database\_username | Database Username |
+| eks\_security\_group | EKS Security Group |
 | kubeconfig | Kubeconfig Output |
 | private\_key | Private Pem Key |
 

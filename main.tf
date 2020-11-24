@@ -137,7 +137,7 @@ module "sg-rds" {
   description = "Security group for EKS ALB"
   vpc_id      = module.vpc.vpc_id
 
-  ingress_cidr_blocks = [module.eks.worker_security_group_id]
+  ingress_cidr_blocks = module.eks.worker_security_group_id
   ingress_rules       = ["mysql-tcp"]
   egress_cidr_blocks  = ["0.0.0.0/0"]
   egress_rules        = ["all-all"]
