@@ -58,3 +58,22 @@ variable "aws_access_key" {
 variable "aws_secret_key" {
   type = string
 }
+
+variable "rds" {
+  type = object({
+    engine         = string
+    engine_version = string
+    instance_class = string
+    storage        = string
+    db_name        = string
+    db_username    = string
+    db_password    = string
+    db_port        = string
+    family         = string
+    option         = string
+    deletion       = bool
+    maintenance    = string
+    backup         = string
+  })
+
+}

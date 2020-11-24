@@ -10,6 +10,9 @@ locals {
   owner          = "OpsLAB Team"
   k8s_namespace  = join("-", ["opslab-k8s", random_string.suffix.result])
   security_group = join("-", ["opslab-eks-sg", random_string.suffix.result])
+  db_identifier  = join("-", ["opslab-rds", random_string.suffix.result])
+  environment    = join("-", ["opslab-rds", "prod"])
+
 }
 
 ## AWS VPC MODULE ##
@@ -143,4 +146,46 @@ module "alb" {
   aws_secret_access_key              = var.aws_secret_key
   region                             = var.region
   k8s_namespace                      = var.alb.namespace
+}
+
+## AWS RDS Module ## 
+
+module "rds" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "2.20.0"
+
+  identifier = local.db_identifier
+
+  engine            = var.rds.engine
+  engine_version    = var.rds.engine_version
+  instance_class    = var.rds.instance_class
+  allocated_storage = var.rds.storage
+
+  name     = var.rds.db_name
+  username = var.rds.db_username
+  password = var.rds.db_password
+  port     = var.rds.db_port
+
+  maintenance_window = var.rds.maintenance
+  backup_window      = var.rds.backup
+
+  tags = {
+    Owner       = local.owner
+    Environment = local.environment
+  }
+
+  # DB subnet group
+  subnet_ids = module.vpc.database_subnet_group
+
+  # DB parameter group
+  family = var.rds.family
+
+  # DB option group
+  major_engine_version = var.rds.option
+
+  # Snapshot name upon DB deletion
+  final_snapshot_identifier = local.db_identifier
+
+  # Database Deletion Protection
+  deletion_protection = var.rds.deletion
 }
